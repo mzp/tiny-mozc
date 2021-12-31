@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "mozc/version"
+require_relative 'mozc/version'
 
 module Tiny
   module Mozc
