@@ -14,3 +14,4 @@ require 'rubocop/rake_task'
 RuboCop::RakeTask.new
 
 task default: %i[test rubocop]
+task format: %i[rubocop:auto_correct]
