@@ -6,9 +6,11 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    ansi (1.5.0)
     ast (2.4.2)
     backport (1.2.0)
     benchmark (0.2.0)
+    builder (3.2.4)
     diff-lcs (1.5.0)
     e2mmap (0.1.0)
     jaro_winkler (1.5.4)
@@ -18,6 +20,11 @@ GEM
       kramdown (~> 2.0)
     mini_portile2 (2.6.1)
     minitest (5.15.0)
+    minitest-reporters (1.4.3)
+      ansi
+      builder
+      minitest (>= 5.0)
+      ruby-progressbar
     nokogiri (1.12.5)
       mini_portile2 (~> 2.6.1)
       racc (~> 1.4)
@@ -74,6 +81,7 @@ PLATFORMS
 
 DEPENDENCIES
   minitest
+  minitest-reporters
   rake
   rubocop
   rubocop-minitest
