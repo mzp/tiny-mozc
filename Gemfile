@@ -5,6 +5,7 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in tiny-mozc.gemspec
 gemspec
 
+gem 'debug'
 gem 'minitest'
 gem 'minitest-reporters'
 gem 'rake'
