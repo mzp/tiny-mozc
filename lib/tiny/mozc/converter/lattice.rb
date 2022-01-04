@@ -9,13 +9,6 @@ module Tiny
       # 単語の出現コストと品詞の接続コストが最も低いものを見つける作業なので、
       # そのために必要な情報を保持する。
       #
-      # Latticeは複数のフェーズを経由して構築される。
-      #
-      #  1. 入力文字列(`key`)から空のLatticeを生成する
-      #  2. 辞書から候補となる品詞を抽出する
-      #  3. 各ノードへ到達する最小コストを計算する
-      #  4. 各ノードのコストを用いて変換候補を生成する
-      #
       # ## ノードの構造
       #
       # 各ノードは入力文字列(`key`)の部分文字列に対応する。
@@ -110,7 +103,7 @@ module Tiny
       #  - 一度作ったLatticeは解放せず、フィールドをクリアして再利用する。
       #
       class Lattice
-        Node = Struct.new(:key, :value, :lid, :rid, :cost, :bnext, :enext, :next, :prev, keyword_init: true) do
+        Node = Struct.new(:key, :value, :lid, :rid, :cost, :wcost, :bnext, :enext, :next, :prev, keyword_init: true) do
           def to_array(field)
             result = []
             node = self
@@ -125,21 +118,27 @@ module Tiny
             node[field] = self[field]
             self[field] = node
           end
+
+          def invisible?
+            key.nil?
+          end
         end
 
-        attr_reader :key
+        attr_reader :key, :bos, :eos
 
         def initialize(key)
           @key = key
+          @bos = Node.new(key: nil, value: 'BOS', wcost: 0, cost: 0, lid: 0, rid: 0)
+          @eos = Node.new(key: nil, value: 'EOS', wcost: 0, cost: 0, lid: 0, rid: 0)
 
-          @begin_nodes = [bos] + key.chars.map(&method(:unknown)) + [eos]
-          @end_nodes = @begin_nodes.dup
+          @begin_nodes = key.chars.map(&method(:unknown)) + [eos]
+          @end_nodes = [bos] + @begin_nodes.dup
         end
 
         def insert(position, fields)
           node = Node.new(fields)
           @begin_nodes[position].insert node, :bnext
-          @end_nodes[position + node.key.size - 1].insert node, :enext
+          @end_nodes[position + node.key.size].insert node, :enext
         end
 
         def begin_nodes(position)
@@ -150,11 +149,11 @@ module Tiny
           @end_nodes[position].to_array(:enext)
         end
 
-        private
-
-        def bos
-          Node.new(key: nil, value: 'BOS', cost: 0, lid: 0, rid: 0)
+        def best_nodes
+          bos.to_array(:next)
         end
+
+        private
 
         UNKNOWN_COST = 32_767
 
@@ -162,11 +161,7 @@ module Tiny
         UNKNOWN_ID = 1837
 
         def unknown(key)
-          Node.new(key: key, value: key, cost: UNKNOWN_COST, lid: UNKNOWN_ID, rid: UNKNOWN_ID)
-        end
-
-        def eos
-          Node.new(key: nil, value: 'EOS', cost: 0, lid: 0, rid: 0)
+          Node.new(key: key, value: key, wcost: UNKNOWN_COST, lid: UNKNOWN_ID, rid: UNKNOWN_ID)
         end
       end
     end
