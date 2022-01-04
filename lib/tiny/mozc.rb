@@ -2,6 +2,7 @@
 
 require_relative 'mozc/version'
 require_relative 'mozc/dictionary/system_dictionary'
+require_relative 'mozc/dictionary/dictionary'
 require_relative 'mozc/converter/connector'
 require_relative 'mozc/converter/lattice'
 require_relative 'mozc/converter/immutable_converter'

@@ -52,7 +52,7 @@ module Tiny
         end
 
         def get_cost(rid, lid)
-          data[(rid * size) + lid]
+          data[(rid * size) + lid].to_i
         end
       end
     end
